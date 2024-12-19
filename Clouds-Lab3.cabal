@@ -1,4 +1,4 @@
-cabal-version: 2.2
+cabal-version: 1.12
 
 -- This file has been generated from package.yaml by hpack version 0.37.0.
 --
@@ -12,7 +12,7 @@ bug-reports:    https://github.com/petals-of-white/Clouds-Lab3/issues
 author:         Maksym Syvash
 maintainer:     maksym_syvash@outlook.com
 copyright:      2024 Maksym Syvash
-license:        BSD-3-Clause
+license:        MIT
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
@@ -25,56 +25,58 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      Persistence
+      Types
   other-modules:
-      Paths_Clouds_Lab3
-  autogen-modules:
       Paths_Clouds_Lab3
   hs-source-dirs:
       src
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  ghc-options: -Wall
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
     , containers
     , filepath
-    , snap
+    , scotty
     , text
-  default-language: Haskell2010
+    , uuid
+  default-language: GHC2021
 
 executable Clouds-Lab3-exe
   main-is: Main.hs
   other-modules:
-      Paths_Clouds_Lab3
-  autogen-modules:
+      Routes
       Paths_Clouds_Lab3
   hs-source-dirs:
       app
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       Clouds-Lab3
+    , aeson
     , base >=4.7 && <5
     , containers
     , filepath
-    , snap
-    , snap-core
+    , scotty
     , text
-  default-language: Haskell2010
+    , transformers
+    , uuid
+  default-language: GHC2021
 
 test-suite Clouds-Lab3-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
       Paths_Clouds_Lab3
-  autogen-modules:
-      Paths_Clouds_Lab3
   hs-source-dirs:
       test
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       Clouds-Lab3
+    , aeson
     , base >=4.7 && <5
     , containers
     , filepath
-    , snap
+    , scotty
     , text
-  default-language: Haskell2010
+    , uuid
+  default-language: GHC2021

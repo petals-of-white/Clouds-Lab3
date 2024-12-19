@@ -1,24 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Main (main) where
-
-import Snap
-import Snap.Util.FileServe
-import Control.Applicative ((<|>))
+module Main where
+import Web.Scotty
 
 main :: IO ()
--- main = putStrLn "545"
-main = quickHttpServe site
-
-site :: Snap ()
-site =
-    ifTop (writeBS "hello world") <|>
-    route [ ("foo", writeBS "bar")
-          , ("echo/:echoparam", echoHandler)
-          ] <|>
-    dir "static" (serveDirectory ".")
-
-echoHandler :: Snap ()
-echoHandler = do
-    param <- getParam "echoparam"
-    maybe (writeBS "must specify echo/param in URL")
-          writeBS param
+main = scotty 3000 $
+  get "/:word" $ do
+    beam <- captureParam "word"
+    html $ mconcat ["<h1>Scotty, ", beam, " me up!</h1>"]

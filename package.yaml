@@ -1,7 +1,7 @@
 name: Clouds-Lab3
 version: 0.1.0.0
 github: "petals-of-white/Clouds-Lab3"
-license: BSD-3-Clause
+license: MIT
 author: "Maksym Syvash"
 maintainer: "maksym_syvash@outlook.com"
 copyright: "2024 Maksym Syvash"
@@ -19,23 +19,18 @@ extra-source-files:
 # common to point users to the README.md file.
 description: Please see the README on GitHub at <https://github.com/petals-of-white/Clouds-Lab3#readme>
 
+default-language: GHC2021
 dependencies:
   - base >= 4.7 && < 5
   - text
   - filepath
   - containers
-  - snap
+  - scotty
+  - uuid
+  - aeson
 
 ghc-options:
   - -Wall
-  - -Wcompat
-  - -Widentities
-  - -Wincomplete-record-updates
-  - -Wincomplete-uni-patterns
-  - -Wmissing-export-lists
-  - -Wmissing-home-modules
-  - -Wpartial-fields
-  - -Wredundant-constraints
 
 library:
   source-dirs: src
@@ -50,8 +45,9 @@ executables:
       - -with-rtsopts=-N
     dependencies:
       - Clouds-Lab3
-      - snap
-      - snap-core
+      - scotty
+      - transformers
+      - aeson
 
 tests:
   Clouds-Lab3-test:
