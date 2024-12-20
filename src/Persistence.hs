@@ -43,6 +43,7 @@ class Monad m => UserRepository m where
     createUser :: User -> m UserID
 
 class Monad m => GenreRepository m where
+    getGenreById :: GenreID -> m (Maybe Genre)
     getGenres :: m [GenreRecord]
     createGenre :: Genre -> m GenreID
 

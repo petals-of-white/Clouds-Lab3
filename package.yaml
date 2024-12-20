@@ -50,6 +50,7 @@ executables:
       - aeson
       - unliftio-core
       - http-types
+      - hasql
 
 tests:
   Clouds-Lab3-test:

@@ -1,9 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 import           Web.Scotty
-
+import Web.Scotty.Trans (scottyT)
+import App (app)
+import qualified Hasql.Connection as Connection
 main :: IO ()
-main = scotty 3000 $
-    get "/:word" $ do
-        beam <- captureParam "word"
-        html $ mconcat ["<h1>Scotty, ", beam, " me up!</h1>"]
+main = do
+    
+    putStrLn "no app"
+    -- scottyT 3000 id app
