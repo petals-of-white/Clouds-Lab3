@@ -45,6 +45,7 @@ library
 executable Clouds-Lab3-exe
   main-is: Main.hs
   other-modules:
+      App
       Routes
       Paths_Clouds_Lab3
   hs-source-dirs:
@@ -56,9 +57,11 @@ executable Clouds-Lab3-exe
     , base >=4.7 && <5
     , containers
     , filepath
+    , http-types
     , scotty
     , text
     , transformers
+    , unliftio-core
     , uuid
   default-language: GHC2021
 

@@ -19,7 +19,7 @@ extra-source-files:
 # common to point users to the README.md file.
 description: Please see the README on GitHub at <https://github.com/petals-of-white/Clouds-Lab3#readme>
 
-default-language: GHC2021
+language: GHC2021
 dependencies:
   - base >= 4.7 && < 5
   - text
@@ -48,6 +48,8 @@ executables:
       - scotty
       - transformers
       - aeson
+      - unliftio-core
+      - http-types
 
 tests:
   Clouds-Lab3-test:

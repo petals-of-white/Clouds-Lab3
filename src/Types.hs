@@ -2,7 +2,7 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 module Types where
 
-import           Data.Aeson      (ToJSON)
+import           Data.Aeson      (FromJSON, ToJSON)
 import           GHC.Generics    (Generic)
 import           Numeric.Natural (Natural)
 
@@ -13,6 +13,10 @@ newtype Genre = Genre {name :: String} deriving Generic
 data Author = Author {firstName :: String, lastName :: String} deriving Generic
 
 instance ToJSON User
+instance FromJSON User
 instance (ToJSON genre, ToJSON author) => ToJSON (Book genre author)
+instance (FromJSON genre, FromJSON author) => FromJSON (Book genre author)
 instance ToJSON Genre
+instance FromJSON Genre
 instance ToJSON Author
+instance FromJSON Author
