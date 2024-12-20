@@ -1,8 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Routes where
+import           Control.Exception         (SomeException (SomeException))
 import           Control.Monad.IO.Unlift
 import           Control.Monad.Trans.Class
+import           Data.Text.Lazy            (Text, unpack)
 import           Data.UUID                 as UUID
 import           Network.HTTP.Types
 import           Persistence
@@ -10,12 +12,23 @@ import           Types
 import           Web.Scotty.Trans
 
 
+newtype ParsableUUID = ParsableUUID {unParsableUUID :: UUID}
+
+instance Parsable ParsableUUID where
+    parseParam textRepr =
+        case UUID.fromString (unpack textRepr) of
+            Just uuid -> Right (ParsableUUID uuid)
+            Nothing   -> Left $ "Cannot represent " <> textRepr <> " as UUID"
+
+maybeQueryParam :: (Parsable a, MonadUnliftIO m) => Text -> ActionT m (Maybe a)
+maybeQueryParam p = rescue (Just <$> queryParam p) (\(SomeException _) -> return Nothing)
+
 
 allUsers :: (UserRepository m, MonadUnliftIO m) => ScottyT m ()
 allUsers =
-        get "/users" $ do
-                users <- lift getUsers
-                json users
+    get "/users" $ do
+        users <- lift getUsers
+        json users
 
 userById :: (UserRepository m, MonadUnliftIO m) => ScottyT m ()
 userById =
@@ -50,6 +63,16 @@ usersBooks =
             Nothing -> do
                 raiseStatus badRequest400 "Invalid user UUID"
 
+setUserBookProgress :: (UserBooksRepo m, MonadUnliftIO m) => ScottyT m ()
+setUserBookProgress = 
+    post "/users/:userId/books" $ do
+        (ParsableUUID userId) <- captureParam "userId"
+        BookProgress {bookId, pagesRead} <- jsonData
+        maybeBooks <- lift $ Persistence.setUserBookProgress (UserID userId) bookId pagesRead
+        case maybeBooks of
+            Just books -> json books
+            Nothing -> raiseStatus notFound404 "User with not found"
+
 allGenres :: (GenreRepository m, MonadUnliftIO m) => ScottyT m ()
 allGenres =
     get "/genres" $ do
@@ -81,7 +104,7 @@ authorById =
                 perhapsAuthor <- lift (getAuthorById (AuthorID uuid))
                 case perhapsAuthor of
                     Just author -> json author
-                    Nothing -> raiseStatus notFound404 "Author not found"
+                    Nothing     -> raiseStatus notFound404 "Author not found"
             Nothing -> raiseStatus badRequest400 "Invalid author UUID"
 
 addAuthor :: (AuthorRepository m, MonadUnliftIO m) => ScottyT m ()
@@ -99,11 +122,23 @@ addBook =
         bookId <- lift (createBook newBook)
         json bookId
 
--- searchBooks :: (BookRepository m, MonadUnliftIO m) => ScottyT m ()
--- searchBooks =
---     get "/books" $ do
---         author <- queryParam "author"
---         genres <- queryParam "genres"
 
-        
-        
+searchBooks :: (BookRepository m, MonadUnliftIO m) => ScottyT m ()
+searchBooks =
+    get "/books" $ do
+        author :: Maybe ParsableUUID <- maybeQueryParam "author"
+        genres :: Maybe [ParsableUUID] <- maybeQueryParam "genres"
+
+        let authorID = AuthorID . unParsableUUID <$> author
+            genreIDs = maybe [] (fmap (GenreID . unParsableUUID)) genres
+
+        books <- lift $ getBooks authorID genreIDs
+        json books
+
+bookById :: (BookRepository m, MonadUnliftIO m) => ScottyT m ()
+bookById =
+    get "/books/:bookId" $ do
+        (ParsableUUID bookId) :: ParsableUUID <- captureParam "bookId"
+        book <- lift $ getBookById (BookID bookId)
+        json book
+

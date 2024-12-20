@@ -19,6 +19,8 @@ data GenreRecord = GenreRecord {id :: GenreID, genre :: Genre} deriving Generic
 data BookRecord = BookRecord {id :: BookID, book :: Book GenreRecord AuthorRecord} deriving Generic
 data AuthorRecord = AuthorRecord {id :: AuthorID, author :: Author} deriving Generic
 
+data BookProgress = BookProgress {bookId :: BookID, pagesRead :: Natural} deriving Generic
+
 instance ToJSON UserID
 instance ToJSON BookID
 instance ToJSON GenreID
@@ -28,6 +30,7 @@ instance FromJSON UserID
 instance FromJSON BookID
 instance FromJSON GenreID
 instance FromJSON AuthorID
+instance FromJSON BookProgress
 
 instance ToJSON AuthorRecord
 instance ToJSON GenreRecord
