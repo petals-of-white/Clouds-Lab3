@@ -46,7 +46,10 @@ executable Clouds-Lab3-exe
   main-is: Main.hs
   other-modules:
       App
-      PostgreSQL
+      PostgreSQL.Statements
+      PostgreSQL.Statements.Authors
+      PostgreSQL.Statements.Codecs
+      PostgreSQL.Statements.Users
       Routes
       Paths_Clouds_Lab3
   hs-source-dirs:
@@ -59,6 +62,7 @@ executable Clouds-Lab3-exe
     , containers
     , filepath
     , hasql
+    , hasql-th
     , http-types
     , scotty
     , text

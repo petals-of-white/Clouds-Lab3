@@ -1,0 +1,33 @@
+CREATE TABLE IF NOT EXISTS users (
+    id uuid primary key,
+    firstName text not null,
+    lastName text not null
+);
+
+CREATE TABLE IF NOT EXISTS author (
+    id uuid primary key,
+    firstName text not null,
+    lastName text not null
+);
+
+create table if not exists genre (
+    id uuid primary key,
+    name text not null
+);
+
+create table if not exists book (
+    id uuid primary key,
+    title text not null,
+    numberOfPages integer not null,
+    authorId uuid not null references author (id)
+);
+
+create table if not exists book_genres (
+	bookId uuid references book(id),
+	genreId uuid references genre(id)
+);
+
+create table if not exists user_books (
+	userId uuid references users(id)
+	bookId uuid references book (id)
+)

@@ -51,6 +51,7 @@ executables:
       - unliftio-core
       - http-types
       - hasql
+      - hasql-th
 
 tests:
   Clouds-Lab3-test:
