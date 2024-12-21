@@ -52,6 +52,8 @@ executables:
       - http-types
       - hasql
       - hasql-th
+      - contravariant-extras
+      - bytestring
 
 tests:
   Clouds-Lab3-test:

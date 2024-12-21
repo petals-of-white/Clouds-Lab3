@@ -3,15 +3,15 @@
 
 module PostgreSQL.Statements.Users where
 
-import           Data.Functor.Contravariant (contramap, (>$<))
-import           Data.Text                  (Text, pack, unpack)
-import           Data.UUID                  (UUID)
-import qualified Hasql.Decoders             as D
-import qualified Hasql.Encoders             as E
+import           Data.Functor.Contravariant   (contramap)
+import           Data.Text                    (pack, unpack)
+import           Data.UUID                    (UUID)
+import qualified Hasql.Decoders               as D
+import qualified Hasql.Encoders               as E
 import           Hasql.Statement
 import           Persistence
+import           PostgreSQL.Statements.Codecs
 import           Types
-import PostgreSQL.Statements.Codecs
 
 -- Statements
 findUserById :: Statement UUID (Maybe User)

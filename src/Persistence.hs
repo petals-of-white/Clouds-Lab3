@@ -9,17 +9,17 @@ import           Numeric.Natural (Natural)
 import           Types
 
 
-newtype UserID = UserID UUID deriving Generic
-newtype BookID = BookID UUID deriving Generic
-newtype GenreID = GenreID UUID deriving Generic
-newtype AuthorID = AuthorID UUID deriving Generic
+newtype UserID = UserID UUID deriving (Generic, Show)
+newtype BookID = BookID UUID deriving (Generic, Show)
+newtype GenreID = GenreID UUID deriving (Generic, Show)
+newtype AuthorID = AuthorID UUID deriving (Generic, Show)
 
-data UserRecord = UserRecord {id :: UserID, user :: User} deriving Generic
-data GenreRecord = GenreRecord {id :: GenreID, genre :: Genre} deriving Generic
-data BookRecord = BookRecord {id :: BookID, book :: Book GenreRecord AuthorRecord} deriving Generic
-data AuthorRecord = AuthorRecord {id :: AuthorID, author :: Author} deriving Generic
+data UserRecord = UserRecord {id :: UserID, user :: User} deriving (Generic, Show)
+data GenreRecord = GenreRecord {id :: GenreID, genre :: Genre} deriving (Generic, Show)
+data BookRecord = BookRecord {id :: BookID, book :: Book GenreRecord AuthorRecord} deriving (Generic, Show)
+data AuthorRecord = AuthorRecord {id :: AuthorID, author :: Author} deriving (Generic, Show)
 
-data BookProgress = BookProgress {bookId :: BookID, pagesRead :: Natural} deriving Generic
+data BookProgress = BookProgress {bookId :: BookID, pagesRead :: Natural} deriving (Generic, Show)
 
 instance ToJSON UserID
 instance ToJSON BookID
@@ -39,7 +39,7 @@ instance ToJSON UserRecord
 
 class Monad m => UserRepository m where
     getUserById :: UserID -> m (Maybe User)
-    getUsers :: m [User]
+    getUsers :: m [UserRecord]
     createUser :: User -> m UserID
 
 class Monad m => GenreRepository m where
@@ -49,7 +49,7 @@ class Monad m => GenreRepository m where
 
 class Monad m => AuthorRepository m where
     getAuthorById :: AuthorID -> m (Maybe Author)
-    getAuthors :: m [Author]
+    getAuthors :: m [AuthorRecord]
     createAuthor :: Author -> m AuthorID
 
 class Monad m => BookRepository m where

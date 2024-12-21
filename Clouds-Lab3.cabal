@@ -46,9 +46,13 @@ executable Clouds-Lab3-exe
   main-is: Main.hs
   other-modules:
       App
+      PostgreSQL.Implementation
       PostgreSQL.Statements
       PostgreSQL.Statements.Authors
+      PostgreSQL.Statements.Books
       PostgreSQL.Statements.Codecs
+      PostgreSQL.Statements.Genres
+      PostgreSQL.Statements.UserBooks
       PostgreSQL.Statements.Users
       Routes
       Paths_Clouds_Lab3
@@ -59,7 +63,9 @@ executable Clouds-Lab3-exe
       Clouds-Lab3
     , aeson
     , base >=4.7 && <5
+    , bytestring
     , containers
+    , contravariant-extras
     , filepath
     , hasql
     , hasql-th

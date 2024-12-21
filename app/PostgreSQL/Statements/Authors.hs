@@ -1,21 +1,22 @@
+{-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE OverloadedStrings     #-}
 
 module PostgreSQL.Statements.Authors where
 
-import           Data.Functor.Contravariant (contramap, (>$<))
-import           Data.Text                  (Text, pack, unpack)
-import           Data.UUID                  (UUID)
-import qualified Hasql.Decoders             as D
-import qualified Hasql.Encoders             as E
+import           Data.Functor.Contravariant   (contramap)
+import           Data.Text                    (pack, unpack)
+import           Data.UUID                    (UUID)
+import qualified Hasql.Decoders               as D
+import qualified Hasql.Encoders               as E
 import           Hasql.Statement
 import           Persistence
+import           PostgreSQL.Statements.Codecs
 import           Types
-import PostgreSQL.Statements.Codecs
 
 
 -- Statements
 getAllAuthors :: Statement () [AuthorRecord]
-getAllAuthors = 
+getAllAuthors =
     Statement
         "select firstName, lastName from author"
         E.noParams
@@ -31,6 +32,20 @@ findAuthorById =
         (D.rowMaybe authorDecoder)
         False
 
+insertAuthor :: Statement Author ()
+insertAuthor =
+    Statement
+        "insert into author (firstName, lastName) values ($1, $2)"
+        authorEncoder
+        D.noResult
+        False
+
+-- Encoders
+authorEncoder :: E.Params Author
+authorEncoder =
+    contramap (pack . (\Author {firstName} -> firstName)) (E.param (E.nonNullable E.text))
+    <>
+    contramap (pack . (\Author {lastName} -> lastName)) (E.param (E.nonNullable E.text))
 
 
 authorDecoder :: D.Row Author
