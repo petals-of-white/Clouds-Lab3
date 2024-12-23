@@ -18,7 +18,7 @@ import           Types
 findGenreById :: Statement UUID (Maybe Genre)
 findGenreById =
     Statement
-        "select name from genre where id = $1"
+        "select name from genre where id = $1;"
         uuidEncoder
         (D.rowMaybe genreDecoder)
         False
@@ -26,17 +26,17 @@ findGenreById =
 getAllGenres :: Statement () [GenreRecord]
 getAllGenres =
     Statement
-        "select * from genre"
+        "select id, name from genre;"
         E.noParams
         (D.rowList genreRecordDecoder)
         False
 
-insertGenre :: Statement Genre ()
+insertGenre :: Statement Genre UUID
 insertGenre =
     Statement
-        "insert into genre (name) values ($1)"
+        "insert into genre (name) values ($1) returning id;"
         genreEncoder
-        D.noResult
+        (head <$> D.rowList (D.column (D.nonNullable D.uuid)))
         False
 
 

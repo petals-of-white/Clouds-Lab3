@@ -17,7 +17,7 @@ import           Types
 findUserById :: Statement UUID (Maybe User)
 findUserById =
     Statement
-        "select firstName, lastName from users where id = $1"
+        "select firstName, lastName from users where id = $1;"
         uuidEncoder
         (D.rowMaybe userDecoder)
         False
@@ -25,17 +25,17 @@ findUserById =
 getAllUsers :: Statement () [UserRecord]
 getAllUsers =
     Statement
-        "select firstName, lastName from users"
+        "select id, firstName, lastName from users;"
         E.noParams
         (D.rowList userRecordDecoder)
         False
 
-insertUser :: Statement User ()
+insertUser :: Statement User UUID
 insertUser =
     Statement
-        "insert into user (firstName, lastName) values ($1, $2)"
+        "insert into users (firstName, lastName) values ($1, $2) returning id;"
         userEncoder
-        D.noResult
+        (head <$> D.rowList (D.column (D.nonNullable D.uuid)))
         False
 
 

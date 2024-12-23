@@ -9,10 +9,10 @@ import           Numeric.Natural (Natural)
 import           Types
 
 
-newtype UserID = UserID UUID deriving (Generic, Show)
-newtype BookID = BookID UUID deriving (Generic, Show)
-newtype GenreID = GenreID UUID deriving (Generic, Show)
-newtype AuthorID = AuthorID UUID deriving (Generic, Show)
+newtype UserID = UserID {unUserID ::UUID} deriving (Generic, Show)
+newtype BookID = BookID {unBookID:: UUID} deriving (Generic, Show)
+newtype GenreID = GenreID {unGenreID :: UUID} deriving (Generic, Show)
+newtype AuthorID = AuthorID {unAuthorID :: UUID} deriving (Generic, Show)
 
 data UserRecord = UserRecord {id :: UserID, user :: User} deriving (Generic, Show)
 data GenreRecord = GenreRecord {id :: GenreID, genre :: Genre} deriving (Generic, Show)
@@ -54,7 +54,7 @@ class Monad m => AuthorRepository m where
 
 class Monad m => BookRepository m where
     getBookById :: BookID -> m (Maybe (Book GenreRecord AuthorRecord))
-    getBooks :: Maybe AuthorID -> [GenreID] -> m [BookRecord]
+    getBooks :: Maybe AuthorID -> Maybe [GenreID] -> m [BookRecord]
     createBook :: Book GenreID AuthorID -> m BookID
 
 class Monad m => UserBooksRepo m where

@@ -18,7 +18,7 @@ import           Types
 getAllAuthors :: Statement () [AuthorRecord]
 getAllAuthors =
     Statement
-        "select firstName, lastName from author"
+        "select id, firstName, lastName from author;"
         E.noParams
         (D.rowList authorRecordDecoder)
         False
@@ -27,17 +27,17 @@ getAllAuthors =
 findAuthorById :: Statement UUID (Maybe Author)
 findAuthorById =
     Statement
-        "select firstName, lastName from author where id = $1"
+        "select firstName, lastName from author where id = $1;"
         uuidEncoder
         (D.rowMaybe authorDecoder)
         False
 
-insertAuthor :: Statement Author ()
+insertAuthor :: Statement Author UUID
 insertAuthor =
     Statement
-        "insert into author (firstName, lastName) values ($1, $2)"
+        "insert into author (firstName, lastName) values ($1, $2) returning id;"
         authorEncoder
-        D.noResult
+        (head <$>D.rowList (D.column (D.nonNullable D.uuid)))
         False
 
 -- Encoders

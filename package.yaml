@@ -54,6 +54,7 @@ executables:
       - hasql-th
       - contravariant-extras
       - bytestring
+      - mtl
 
 tests:
   Clouds-Lab3-test:

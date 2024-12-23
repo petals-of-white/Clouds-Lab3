@@ -25,6 +25,7 @@ source-repository head
 
 library
   exposed-modules:
+      Common
       Persistence
       Types
   other-modules:
@@ -46,15 +47,24 @@ executable Clouds-Lab3-exe
   main-is: Main.hs
   other-modules:
       App
+      Env
       PostgreSQL.Implementation
+      PostgreSQL.Sessions
       PostgreSQL.Statements
       PostgreSQL.Statements.Authors
+      PostgreSQL.Statements.BookGenres
       PostgreSQL.Statements.Books
       PostgreSQL.Statements.Codecs
       PostgreSQL.Statements.Genres
       PostgreSQL.Statements.UserBooks
       PostgreSQL.Statements.Users
       Routes
+      Routes.Authors
+      Routes.Books
+      Routes.Common
+      Routes.Genres
+      Routes.UserBooks
+      Routes.Users
       Paths_Clouds_Lab3
   hs-source-dirs:
       app
@@ -70,6 +80,7 @@ executable Clouds-Lab3-exe
     , hasql
     , hasql-th
     , http-types
+    , mtl
     , scotty
     , text
     , transformers
