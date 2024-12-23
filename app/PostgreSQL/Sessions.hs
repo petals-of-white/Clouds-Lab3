@@ -4,8 +4,9 @@ module PostgreSQL.Sessions where
 
 import           Hasql.Session                    as Session
 import           Persistence
-import           PostgreSQL.Statements.BookGenres (bookGenres)
+import           PostgreSQL.Statements.BookGenres (addBookGenres, bookGenres)
 import qualified PostgreSQL.Statements.Books      as B
+import qualified PostgreSQL.Statements.UserBooks as UB
 import           Types
 
 
@@ -18,5 +19,20 @@ findBookById (BookID bookId) =
             )
     )
 
+insertBookAddGenres :: Book GenreID AuthorID -> Session BookID
+insertBookAddGenres book = do
+    newBookId <- Session.statement (book{genres=[()]}) B.insertBook
+    Session.statement (newBookId, map unGenreID (genres book)) addBookGenres
+    return (BookID newBookId)
 
+
+getUserBooks :: UserID -> Session [BookRecord]
+getUserBooks bookId = do
+    uBooks <- Session.statement bookId UB.getUserBooks
+    mapM pullGenres uBooks
+    
+    where
+        pullGenres :: (BookID, Book () AuthorRecord) -> Session BookRecord
+        pullGenres (bookId, book) =
+            Session.statement (unBookID bookId) bookGenres >>= (\bGenres -> return (BookRecord bookId book{genres=bGenres}))
 

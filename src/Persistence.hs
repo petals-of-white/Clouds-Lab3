@@ -58,5 +58,5 @@ class Monad m => BookRepository m where
     createBook :: Book GenreID AuthorID -> m BookID
 
 class Monad m => UserBooksRepo m where
-    getUserBooks :: UserID -> m (Maybe [BookRecord])
-    setUserBookProgress :: UserID -> BookID -> Natural -> m (Maybe ())
+    getUserBooks :: UserID -> m [BookRecord]
+    setUserBookProgress :: UserID -> BookID -> Natural -> m ()

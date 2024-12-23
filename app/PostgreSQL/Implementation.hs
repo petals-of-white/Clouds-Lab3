@@ -12,6 +12,7 @@ import qualified PostgreSQL.Sessions        as Sessions
 import           PostgreSQL.Statements
 
 
+
 newtype PostgreSqlDB a = PostgreSqlDB {unPostgreApp :: ReaderT Settings IO a} deriving (Functor, Applicative, Monad, MonadIO, MonadUnliftIO)
 
 instance UserRepository PostgreSqlDB where
@@ -24,20 +25,37 @@ instance UserRepository PostgreSqlDB where
 
 instance AuthorRepository PostgreSqlDB where
     getAuthorById (AuthorID authorId) = execSingleStatement authorId findAuthorById
+
     getAuthors = execSingleStatement () getAllAuthors
+
     createAuthor author = AuthorID <$> execSingleStatement author insertAuthor
 
 instance GenreRepository PostgreSqlDB where
   getGenreById (GenreID genreId) = execSingleStatement genreId findGenreById
+
   getGenres = execSingleStatement () getAllGenres
+
   createGenre genre = GenreID <$> execSingleStatement genre insertGenre
 
 
 instance BookRepository PostgreSqlDB where
-  getBookById bookId = execSession  (Sessions.findBookById bookId)
-  getBooks authorFilter genresFilter = execSingleStatement (fmap unAuthorID authorFilter, innermap unGenreID genresFilter) filterBooks
-    where innermap f = fmap (fmap f)
-  createBook = undefined
+    getBookById bookId = execSession  (Sessions.findBookById bookId)
+
+    getBooks authorFilter genresFilter = execSingleStatement (fmap unAuthorID authorFilter, innermap unGenreID genresFilter) filterBooks
+        where innermap f = fmap (fmap f)
+
+    createBook book = execSession (Sessions.insertBookAddGenres book)
+
+instance UserBooksRepo PostgreSqlDB where
+  getUserBooks userId = execSession (Sessions.getUserBooks userId)
+
+  setUserBookProgress userId bookId pgRead = execSingleStatement (userId,bookId,pgRead) insertUserBook 
+
+    
+
+
+
+
 
 execSession :: Session result -> PostgreSqlDB result
 execSession sess = PostgreSqlDB $ do

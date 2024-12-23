@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Routes (module Authors, module Books, module Genres, module Users, module UserBooks) where
 import           Routes.Authors   as Authors
 import           Routes.Books     as Books

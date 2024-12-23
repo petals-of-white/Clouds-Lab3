@@ -38,22 +38,14 @@ findBookById =
 --         (D.rowList genreRecordDecoder)
 --         False
 
-bookFilterEncoder :: E.Params (Maybe UUID, Maybe [UUID])
-bookFilterEncoder =
-    contrazip2
-        (E.param (E.nullable E.uuid))
-        (E.param (E.nullable (E.foldableArray (E.nonNullable E.uuid))))
-
-data FlatBookInfo = FlatBookInfo {
-    id :: UUID, title :: Text, numberOfPages :: Int32,
-    authorId :: UUID, authorFirstName :: Text, authorLastName :: Text,
-    genreId :: UUID, genreName :: Text}
-
-flatBookAuthor :: FlatBookInfo -> AuthorRecord
-flatBookAuthor FlatBookInfo{authorId, authorFirstName, authorLastName} = AuthorRecord (AuthorID authorId) (Author (unpack authorFirstName) (unpack authorLastName))
-
-flatBookGenre :: FlatBookInfo -> GenreRecord
-flatBookGenre FlatBookInfo {genreId, genreName} = GenreRecord (GenreID genreId) (Genre (unpack genreName))
+insertBook :: Statement (Book () AuthorID) UUID
+insertBook =
+    Statement
+        "insert into book (title, numberOfPages, authorId) \
+        \ values ($1, $2, $3) returning id"
+        bookEncoder
+        (head <$> D.rowList (D.column (D.nonNullable D.uuid)))
+        False
 
 filterBooks :: Statement (Maybe UUID, Maybe [UUID]) [BookRecord]
 filterBooks =
@@ -91,14 +83,7 @@ filterBooks =
 
 
 
-insertBook :: Statement (Book () AuthorID) UUID
-insertBook =
-    Statement
-        "insert into book (title, numberOfPages, authorId) \
-        \ values ($1, $2, $3) returning id"
-        bookEncoder
-        (head <$> D.rowList (D.column (D.nonNullable D.uuid)))
-        False
+
 
 
 
@@ -137,3 +122,20 @@ bookEncoder :: E.Params (Book () AuthorID)
 bookEncoder =
     contramap (\Book{title=t, numberOfPages=pages, author=(AuthorID uuid)} -> (pack t, fromIntegral pages, uuid))
     $ contrazip3 (E.param (E.nonNullable E.text)) (E.param (E.nonNullable E.int4)) uuidEncoder
+
+bookFilterEncoder :: E.Params (Maybe UUID, Maybe [UUID])
+bookFilterEncoder =
+    contrazip2
+        (E.param (E.nullable E.uuid))
+        (E.param (E.nullable (E.foldableArray (E.nonNullable E.uuid))))
+
+data FlatBookInfo = FlatBookInfo {
+    id :: UUID, title :: Text, numberOfPages :: Int32,
+    authorId :: UUID, authorFirstName :: Text, authorLastName :: Text,
+    genreId :: UUID, genreName :: Text}
+
+flatBookAuthor :: FlatBookInfo -> AuthorRecord
+flatBookAuthor FlatBookInfo{authorId, authorFirstName, authorLastName} = AuthorRecord (AuthorID authorId) (Author (unpack authorFirstName) (unpack authorLastName))
+
+flatBookGenre :: FlatBookInfo -> GenreRecord
+flatBookGenre FlatBookInfo {genreId, genreName} = GenreRecord (GenreID genreId) (Genre (unpack genreName))

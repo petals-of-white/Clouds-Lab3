@@ -3,40 +3,41 @@
 
 module PostgreSQL.Statements.UserBooks where
 
+import           Contravariant.Extras         (contrazip3)
 import           Data.Functor.Contravariant   (contramap)
-import           Data.Text                    (pack, unpack)
-import           Data.UUID                    (UUID)
 import qualified Hasql.Decoders               as D
 import qualified Hasql.Encoders               as E
 import           Hasql.Statement
+import           Numeric.Natural              (Natural)
 import           Persistence
+import           PostgreSQL.Statements.Books  (bookDecoder)
 import           PostgreSQL.Statements.Codecs
 import           Types
 
 
--- getUserBooks :: Statement UUID ([Book])
--- getUserBooks = 
---     Statement
---         "select bookId from book where bookId = $1"
---         uuidEncoder
---         (D.rowMaybe bookDecoder)
---         False
-        
+getUserBooks :: Statement UserID [(BookID, Book () AuthorRecord)]
+getUserBooks =
+    Statement
+        "select book.id, book.title, book.numberOfPages, author.id, author.firstName, author.lastName \
+        \ from book inner join author on book.authorId = author.id \
+        \ where book.id = $1 "
+        (contramap unUserID uuidEncoder)
+        (D.rowList (((,) . BookID <$> D.column (D.nonNullable D.uuid)) <*> bookDecoder))
+        False
 
+insertUserBook :: Statement (UserID, BookID, Natural) ()
+insertUserBook =
+    Statement
+        "insert into user_books (userId, bookId, pagesRead) \
+        \ values ($1, $2, $3)"
+        insertBookEncoder
+        D.noResult
+        False
 
--- -- Decoders
--- bookDecoder :: D.Row Book
--- genreDecoder =
---     -- Genre . unpack <$> D.column (D.nonNullable D.text)
-
-
--- bookRecordDecoder :: D.Row BookRecord
--- bookRecordDecoder =
---     pure GenreRecord
---         <*> fmap GenreID (D.column (D.nonNullable D.uuid))
---         <*> genreDecoder
-
--- -- Encoders
--- bookEncoder :: E.Params Book
--- bookEncoder =
---     contramap (pack . (\(Genre name) -> name)) (E.param (E.nonNullable E.text))
+insertBookEncoder :: E.Params (UserID, BookID, Natural)
+insertBookEncoder =
+    contramap (\(userId, bookId, pgRead) -> (unUserID userId, unBookID bookId, fromIntegral pgRead))
+    $ contrazip3
+        (E.param (E.nonNullable E.uuid))
+        (E.param (E.nonNullable E.uuid))
+        (E.param (E.nonNullable E.int4))

@@ -10,12 +10,14 @@ import           Web.Scotty.Trans
 
 
 app ::
-    (UserRepository m, AuthorRepository m, GenreRepository m, MonadUnliftIO m)
+    (UserRepository m, AuthorRepository m, GenreRepository m, BookRepository m, UserBooksRepo m, MonadUnliftIO m)
     => ScottyT m ()
 -- app :: ScottyT PostgreSqlDB ()
 app = do
 
-    defaultHandler (Handler (\qerr@(QueryError query params err) -> status status500 >> text (pack (show qerr))))
+    defaultHandler (Handler (\qerr@(QueryError query params err) ->
+        status status500 >> text (pack (show qerr)))
+        )
 
     allUsers
     userById
@@ -29,12 +31,12 @@ app = do
     addGenre
     genreById
 
-    -- searchBooks
-    -- bookById
-    -- addBook
+    searchBooks
+    bookById
+    addBook
 
-    -- usersBooks
-    -- Routes.setUserBookProgress
+    usersBooks
+    Routes.setUserBookProgress
 
 --     userById
 
