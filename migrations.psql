@@ -1,33 +1,35 @@
 CREATE TABLE IF NOT EXISTS users (
-    id uuid primary key,
+    id uuid primary key default gen_random_uuid(),
     firstName text not null,
     lastName text not null
 );
 
 CREATE TABLE IF NOT EXISTS author (
-    id uuid primary key,
+    id uuid primary key default gen_random_uuid(),
     firstName text not null,
     lastName text not null
 );
 
 create table if not exists genre (
-    id uuid primary key,
+    id uuid primary key default gen_random_uuid(),
     name text not null
 );
 
 create table if not exists book (
-    id uuid primary key,
+    id uuid primary key default gen_random_uuid(),
     title text not null,
     numberOfPages integer not null,
-    authorId uuid not null references author (id)
+    authorId uuid not null references author(id)
 );
 
 create table if not exists book_genres (
 	bookId uuid references book(id),
-	genreId uuid references genre(id)
+	genreId uuid references genre(id),
+    primary key (bookId, genreId)
 );
 
 create table if not exists user_books (
-	userId uuid references users(id)
-	bookId uuid references book (id)
-)
+	userId uuid references users(id),
+	bookId uuid references book (id),
+    primary key (userId, bookId)
+);
