@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module App where
 import           Control.Monad.IO.Unlift
 import           Data.Text.Lazy          (pack)
@@ -6,11 +7,14 @@ import           Network.HTTP.Types      (status500)
 import           Persistence
 import           Routes
 import           Web.Scotty.Trans
+import Colog
+import Control.Monad.Trans (lift)
 -- import Control.Monad.Trans.Reader (ReaderT)
 
 
 app ::
-    (UserRepository m, AuthorRepository m, GenreRepository m, BookRepository m, UserBooksRepo m, MonadUnliftIO m)
+    (UserRepository m, AuthorRepository m, GenreRepository m, 
+    BookRepository m, UserBooksRepo m, MonadUnliftIO m, WithLog env Message m)
     => ScottyT m ()
 -- app :: ScottyT PostgreSqlDB ()
 app = do

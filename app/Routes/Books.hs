@@ -7,16 +7,19 @@ import           Persistence
 import           Routes.Common
 import           Types
 import           Web.Scotty.Trans
+import Colog
+import Data.Text (pack)
 
-addBook :: (BookRepository m, MonadUnliftIO m) => ScottyT m ()
+addBook :: (BookRepository m, MonadUnliftIO m,  WithLog env Message m) => ScottyT m ()
 addBook =
     post "/books" $ do
         newBook :: Book GenreID AuthorID <- jsonData
         bookId <- lift (createBook newBook)
+        lift $ logInfo $ pack ("Created a book with id " ++ show bookId)
         json bookId
 
 
-searchBooks :: (BookRepository m, MonadUnliftIO m) => ScottyT m ()
+searchBooks :: (BookRepository m, MonadUnliftIO m, WithLog env Message m) => ScottyT m ()
 searchBooks =
     get "/books" $ do
         author :: Maybe ParsableUUID <- maybeQueryParam "author"
@@ -24,11 +27,11 @@ searchBooks =
 
         let authorID = AuthorID . unParsableUUID <$> author
             genreIDs =  fmap (fmap (GenreID . unParsableUUID)) genres
-
         books <- lift $ getBooks authorID genreIDs
+        lift $ logInfo $ pack ("Found " ++ show (length books) ++ " books")
         json books
 
-bookById :: (BookRepository m, MonadUnliftIO m) => ScottyT m ()
+bookById :: (BookRepository m, MonadUnliftIO m, WithLog env Message m) => ScottyT m ()
 bookById =
     get "/books/:bookId" $ do
         (ParsableUUID bookId) :: ParsableUUID <- captureParam "bookId"

@@ -8,8 +8,12 @@ import           Data.ByteString.Char8
 import           Hasql.Connection           (Settings)
 import           PostgreSQL.Implementation  (PostgreSqlDB (unPostgreApp))
 import           System.Environment         (getEnv)
+import Colog 
+import Control.Exception (try)
 
 main :: IO ()
 main = do
+    -- logDebug "Running app"
+    -- connStrRes <- try
     settings :: Settings <- pack <$> getEnv "POSTGRESQL_CONNECTION_STRING"
     scottyT 8000 (flip runReaderT settings . unPostgreApp) app

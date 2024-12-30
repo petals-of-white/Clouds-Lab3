@@ -10,10 +10,14 @@ import           Hasql.Statement            (Statement)
 import           Persistence
 import qualified PostgreSQL.Sessions        as Sessions
 import           PostgreSQL.Statements
+import           Control.Monad.Reader (MonadReader)
+import Colog
 
+newtype PostgreSqlDB a = PostgreSqlDB {unPostgreApp :: ReaderT Settings IO a} deriving (Functor, Applicative, Monad, MonadIO, MonadUnliftIO, (MonadReader Settings))
 
-
-newtype PostgreSqlDB a = PostgreSqlDB {unPostgreApp :: ReaderT Settings IO a} deriving (Functor, Applicative, Monad, MonadIO, MonadUnliftIO)
+instance HasLog Settings Message (PostgreSqlDB) where
+    getLogAction = const richMessageAction
+    setLogAction = const Prelude.id
 
 instance UserRepository PostgreSqlDB where
     getUsers = execSingleStatement () getAllUsers

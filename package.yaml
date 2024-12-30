@@ -55,7 +55,7 @@ executables:
       - contravariant-extras
       - bytestring
       - mtl
-
+      - co-log
 tests:
   Clouds-Lab3-test:
     main: Spec.hs
