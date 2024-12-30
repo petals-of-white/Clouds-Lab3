@@ -15,12 +15,14 @@ jobs:
     - name: 'Checkout Github Action'
       uses: actions/checkout@v4
 
+
     - name: "Log in using docker to azure"
       uses: azure/docker-login@v2
       with:
         login-server: index.docker.io
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
+
 
     - name: Login to Docker Hub
       uses: docker/login-action@v3
@@ -45,6 +47,7 @@ jobs:
     #     docker pull ${{ vars.DOCKER_IMAGE_NAME }}:staged || echo "No previous image found for caching"
     #     docker build --cache-from=${{ vars.DOCKER_IMAGE_NAME }}:staged . -t ${{ vars.DOCKER_IMAGE_NAME }}:${{ github.sha }}
     #     docker push ${{ vars.DOCKER_IMAGE_NAME }}:${{ github.sha }} 
+
 
   deploy:
     runs-on: ubuntu-latest
