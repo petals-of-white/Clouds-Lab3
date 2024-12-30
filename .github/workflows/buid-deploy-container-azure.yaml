@@ -35,18 +35,12 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         push: true
-        tags: ${{ vars.DOCKER_IMAGE_NAME }}:${{ github.sha }}, ${{ vars.DOCKER_IMAGE_NAME }}:staged
-        cache-from: type=registy,ref=${{ vars.DOCKER_IMAGE_NAME }}:staged
-        cache-to: inline
-
-
-    # - name: "Build and push docker image"
-    #   run: |
-    #     docker pull ${{ vars.DOCKER_IMAGE_NAME }}:staged || echo "No previous image found for caching"
-    #     docker build --cache-from=${{ vars.DOCKER_IMAGE_NAME }}:staged . -t ${{ vars.DOCKER_IMAGE_NAME }}:${{ github.sha }}
-    #     docker push ${{ vars.DOCKER_IMAGE_NAME }}:${{ github.sha }} 
+        tags: ${{ vars.DOCKER_IMAGE_NAME }}:${{ github.sha }},${{ vars.DOCKER_IMAGE_NAME }}:staged
+        cache-from: ${{ vars.DOCKER_IMAGE_NAME }}:staged
+        # cache-to: inline
 
   deploy:
+    needs: build
     runs-on: ubuntu-latest
     environment: Prod
     steps:
