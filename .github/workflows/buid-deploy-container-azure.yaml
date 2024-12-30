@@ -2,7 +2,7 @@ name: Deploying a Haskell app to Azure Web app Container
 
 on: 
     push:
-        branches : ["main"]
+        branches : ["scotty", "main"]
     workflow_dispatch:
 
 jobs:
