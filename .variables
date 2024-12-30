@@ -1,0 +1,2 @@
+DOCKER_IMAGE_NAME=heavensdivide/clouds-app
+AZURE_WEBAPP_NAME=bookmanager-scotty
