@@ -15,17 +15,39 @@ jobs:
     - name: 'Checkout Github Action'
       uses: actions/checkout@v4
 
-    - name: "Log in using docker"
+
+    - name: "Log in using docker to azure"
       uses: azure/docker-login@v2
       with:
         login-server: index.docker.io
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
 
-    - name: "Build and push docker image"
-      run: |
-        docker build --cache-from=${{ vars.DOCKER_IMAGE_NAME }}:latest . -t ${{ vars.DOCKER_IMAGE_NAME }}:${{ github.sha }}
-        docker push ${{ vars.DOCKER_IMAGE_NAME }}:${{ github.sha }} 
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name : Build and Push
+      uses: docker/build-push-action@v6
+      with:
+        push: true
+        tags: ${{ vars.DOCKER_IMAGE_NAME }}:${{ github.sha }}, ${{ vars.DOCKER_IMAGE_NAME }}:staged
+        cache-from: type=registy,ref=${{ vars.DOCKER_IMAGE_NAME }}:staged
+        cache-to: inline
+
+
+    # - name: "Build and push docker image"
+    #   run: |
+    #     docker pull ${{ vars.DOCKER_IMAGE_NAME }}:staged || echo "No previous image found for caching"
+    #     docker build --cache-from=${{ vars.DOCKER_IMAGE_NAME }}:staged . -t ${{ vars.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+    #     docker push ${{ vars.DOCKER_IMAGE_NAME }}:${{ github.sha }} 
+
 
   deploy:
     runs-on: ubuntu-latest
